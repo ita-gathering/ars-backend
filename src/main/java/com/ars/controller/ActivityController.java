@@ -1,6 +1,7 @@
 package com.ars.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ars.dto.ResponseDto;
 import com.ars.po.Activity;
 import com.ars.service.ActivityService;
 import org.springframework.web.bind.annotation.*;
@@ -19,45 +20,36 @@ public class ActivityController {
     private ActivityService activityService;
 
     @PostMapping("/activity")
-    public JSONObject createActivity(@RequestBody Activity activity) {
-        JSONObject res = new JSONObject();
+    public ResponseDto createActivity(@RequestBody Activity activity) {
         activityService.createActivity(activity);
-        res.put("activity", activity);
-        return res;
+        return ResponseDto.success(activity);
     }
 
     @GetMapping("/activity/{activityId}")
-    public JSONObject getActivityById(@PathVariable String activityId) {
+    public ResponseDto getActivityById(@PathVariable String activityId) {
         JSONObject res = new JSONObject();
         Activity activity = activityService.getActivityById(activityId);
         if (Objects.isNull(activity)) {
-            res.put("message", "can not find activity");
-        } else {
-            res.put("acvitity", activity);
+            return ResponseDto.fail("can not find activity");
         }
-        return res;
+        return ResponseDto.success(activity);
     }
 
     @PutMapping("/activity/{activityId}")
-    public JSONObject updateActivity(@PathVariable String activityId, @RequestBody JSONObject request) {
+    public ResponseDto updateActivity(@PathVariable String activityId, @RequestBody JSONObject request) {
         JSONObject res = new JSONObject();
         if (activityService.updateActivity(activityId, request.get("description"))) {
-            res.put("message", "update description in activity successfully");
-        } else {
-            res.put("message", "update description in parkingBoy failed");
+            return ResponseDto.success();
         }
-        return res;
+        return ResponseDto.fail("update description in parkingBoy failed");
     }
 
     @DeleteMapping("/activity/{activityId}")
-    public JSONObject deleteActivity(@PathVariable String activityId) {
-        JSONObject res = new JSONObject();
+    public ResponseDto deleteActivity(@PathVariable String activityId) {
         Activity deletedActivity = activityService.deleteActivity(activityId);
         if (Objects.isNull(deletedActivity)) {
-            res.put("message", "delete activity failed");
-        } else {
-            res.put("activity", deletedActivity);
+            return ResponseDto.fail("delete activity failed");
         }
-        return res;
+        return ResponseDto.success(deletedActivity);
     }
 }
