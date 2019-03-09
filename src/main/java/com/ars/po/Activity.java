@@ -1,0 +1,16 @@
+package com.ars.po;
+
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+
+/**
+ * @author Ocean Liang
+ * @date 3/8/2019
+ */
+@Data
+public class Activity {
+    @Id
+    private String id;
+    private String name;
+    private String description;
+}
