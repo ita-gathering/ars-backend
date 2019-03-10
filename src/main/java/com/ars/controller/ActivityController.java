@@ -27,7 +27,6 @@ public class ActivityController {
 
     @GetMapping("/activity/{activityId}")
     public ResponseDto getActivityById(@PathVariable String activityId) {
-        JSONObject res = new JSONObject();
         Activity activity = activityService.getActivityById(activityId);
         if (Objects.isNull(activity)) {
             return ResponseDto.fail("can not find activity");
@@ -37,7 +36,6 @@ public class ActivityController {
 
     @PutMapping("/activity/{activityId}")
     public ResponseDto updateActivity(@PathVariable String activityId, @RequestBody JSONObject request) {
-        JSONObject res = new JSONObject();
         if (activityService.updateActivity(activityId, request.get("description"))) {
             return ResponseDto.success();
         }
