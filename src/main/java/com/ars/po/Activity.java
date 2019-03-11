@@ -3,11 +3,14 @@ package com.ars.po;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
+import javax.persistence.Entity;
+
 /**
  * @author Ocean Liang
  * @date 3/8/2019
  */
 @Data
+@Entity
 public class Activity {
     @Id
     private String id;
@@ -19,14 +22,37 @@ public class Activity {
         this.description = description;
     }
 
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @param description the description to set
+     */
     public void setDescription(String description) {
         this.description = description;
     }
