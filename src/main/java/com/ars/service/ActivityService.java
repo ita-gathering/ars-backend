@@ -17,8 +17,8 @@ public class ActivityService {
     @Resource
     private ActivityRepository activityRepository;
 
-    public void createActivity(Activity activity) {
-        activityRepository.save(activity);
+    public Activity createActivity(Activity activity) {
+        return activityRepository.save(activity);
     }
 
     public Activity getActivityById(String activityId) {
