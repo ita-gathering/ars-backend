@@ -19,7 +19,7 @@ public class ActivityRepositoryTest {
   private ActivityRepository activityRepository;
 
   @Autowired
-  private MongoTemplate mongoOperations;
+  private MongoTemplate mongoTemplate;
 
   public ActivityRepositoryTest() {
   }
@@ -27,12 +27,14 @@ public class ActivityRepositoryTest {
   @Test
   public void givenActivityWhoseIdIs1WhenFindByNameThenGetIt() {
     // given
-    Activity activity = new Activity();
-    activity.setTitle("activity1");
-    mongoOperations.save(activity);
+    Activity activity1 = new Activity();
+    activity1.setTitle("activity1");
+    mongoTemplate.save(activity1);
+    Activity activity2 = new Activity();
+    activity2.setTitle("activity2");
 
     // when
-    Activity getActivity = activityRepository.findByTitle("activity1");
+    Activity getActivity = activityRepository.findByTitle("activity1").orElse(activity2);
 
     // then
     assertThat(getActivity.getTitle(), is("activity1"));
