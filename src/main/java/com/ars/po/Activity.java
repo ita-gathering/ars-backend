@@ -10,7 +10,6 @@ import javax.persistence.Entity;
  * @date 3/8/2019
  */
 @Data
-@Entity
 public class Activity {
     @Id
     private String id;
