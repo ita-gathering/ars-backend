@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ActivityRepository extends MongoRepository<Activity, String> {
+    Activity findByTitle(String name);
 }

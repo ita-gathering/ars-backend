@@ -25,14 +25,16 @@ public class ActivityRepositoryTest {
   }
 
   @Test
-  public void givenActivityWhoseIdIs1WhenFindByIdThenGetIt() {
+  public void givenActivityWhoseIdIs1WhenFindByNameThenGetIt() {
     // given
-    mongoOperations.save(new Activity("activity1", "testing activity"));
+    Activity activity = new Activity();
+    activity.setTitle("activity1");
+    mongoOperations.save(activity);
 
     // when
-    Activity activity = activityRepository.findAll().get(0);
+    Activity getActivity = activityRepository.findByTitle("activity1");
 
     // then
-    assertThat(activity.getName(), is("activity1"));
+    assertThat(getActivity.getTitle(), is("activity1"));
   }
 }
