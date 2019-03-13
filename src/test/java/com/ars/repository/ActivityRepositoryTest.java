@@ -9,29 +9,31 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@SpringBootTest
+@AutoConfigureDataMongo
 public class ActivityRepositoryTest {
 
   @Autowired
   private ActivityRepository activityRepository;
 
   @Autowired
-  private TestEntityManager testEntityManager;
+  private MongoOperations mongoOperations;
 
-  @After
-  public void tearDown() {
-    testEntityManager.clear();
+  public ActivityRepositoryTest() {
   }
 
   @Test
   public void givenActivityWhoseIdIs1WhenFindByIdThenGetIt() {
     // given
-    testEntityManager.persist(new Activity("activity1", "testing activity"));
+    mongoOperations.insert(new Activity("activity1", "testing activity"));
 
     // when
     Activity activity = activityRepository.findById("1").orElse(new Activity("activity2", "wrong activity"));
