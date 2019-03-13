@@ -12,5 +12,7 @@ import java.util.Optional;
  */
 @Repository
 public interface ActivityRepository extends MongoRepository<Activity, String> {
-    Optional<Activity> findByTitle(String name);
+    Optional<Activity> findByTitle(String title);
+
+    Optional<Activity> findByAuthor(String author);
 }

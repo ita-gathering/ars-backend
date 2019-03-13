@@ -1,12 +1,14 @@
 package com.ars.service;
 
 import com.ars.po.Activity;
+import com.ars.po.User;
 import com.ars.repository.ActivityRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Ocean Liang
@@ -30,6 +32,14 @@ public class ActivityService {
         return activityRepository.findById(activityId).orElse(null);
     }
 
+    public Activity getActivityByTitle(String title) {
+        return activityRepository.findByTitle(title).orElse(null);
+    }
+
+    public Activity getActivityByAuthor(String author) {
+        return activityRepository.findByAuthor(author).orElse(null);
+    }
+
     public boolean updateActivity(String activityId, Activity newActivity) {
         Activity existedActivity = activityRepository.findById(activityId).orElse(null);
         if (Objects.isNull(existedActivity)) {
@@ -50,5 +60,13 @@ public class ActivityService {
         }
         activityRepository.delete(activity);
         return activity;
+    }
+
+    public void participateActivity(String userName) {
+
+        Activity activity = activityRepository.findById("5c887c4f3b2dc429003a4e1c").orElse(null);
+        activity.getParticipants().add(new User("e","eee"));
+        activityRepository.save(activity);
+
     }
 }

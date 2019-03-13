@@ -43,10 +43,28 @@ public class ActivityController {
         });
         return ResponseDto.success(activityDtos);
     }
-    
+
     @GetMapping("/activity/{activityId}")
     public ResponseDto getActivityById(@PathVariable String activityId) {
         Activity activity = activityService.getActivityById(activityId);
+        if (Objects.isNull(activity)) {
+            return ResponseDto.fail("can not find activity");
+        }
+        return ResponseDto.success(activity);
+    }
+
+    @GetMapping("/activity/title={title}")
+    public ResponseDto getActivityByTitle(@PathVariable String title) {
+        Activity activity = activityService.getActivityByTitle(title);
+        if (Objects.isNull(activity)) {
+            return ResponseDto.fail("can not find activity");
+        }
+        return ResponseDto.success(activity);
+    }
+
+    @GetMapping("/activity/author={author}")
+    public ResponseDto getActivityByAuthor(@PathVariable String author) {
+        Activity activity = activityService.getActivityByAuthor(author);
         if (Objects.isNull(activity)) {
             return ResponseDto.fail("can not find activity");
         }
