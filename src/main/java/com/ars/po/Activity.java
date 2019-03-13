@@ -3,8 +3,6 @@ package com.ars.po;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-
 /**
  * @author Ocean Liang
  * @date 3/8/2019
