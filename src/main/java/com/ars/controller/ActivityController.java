@@ -1,11 +1,12 @@
 package com.ars.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.ars.dto.ActivityDto;
 import com.ars.dto.ResponseDto;
+import com.ars.dto.UserDto;
 import com.ars.po.Activity;
 import com.ars.service.ActivityService;
+import com.ars.utils.WrappedBeanCopier;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -35,9 +36,14 @@ public class ActivityController {
     @GetMapping("/activity")
     public ResponseDto getAllActivities() {
         List<Activity> activities = activityService.getAllActivities();
-        return ResponseDto.success(activities);
+        List<ActivityDto> activityDtos = WrappedBeanCopier.copyPropertiesOfList(activities, ActivityDto.class);
+        activityDtos.forEach(activityDto -> {
+            List<UserDto> userDtos = WrappedBeanCopier.copyPropertiesOfList(activityDto.getParticipants(), UserDto.class);
+            activityDto.setParticipants(userDtos);
+        });
+        return ResponseDto.success(activityDtos);
     }
-
+    
     @GetMapping("/activity/{activityId}")
     public ResponseDto getActivityById(@PathVariable String activityId) {
         Activity activity = activityService.getActivityById(activityId);
@@ -62,6 +68,12 @@ public class ActivityController {
             return ResponseDto.fail("delete activity failed");
         }
         return ResponseDto.success(deletedActivity);
+    }
+
+    @PostMapping("/activity/{userName}")
+    public ResponseDto participateActivity(@PathVariable String userName) {
+        activityService.participateActivity(userName);
+        return ResponseDto.success();
     }
 
 }
