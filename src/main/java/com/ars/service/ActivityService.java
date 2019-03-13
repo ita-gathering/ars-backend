@@ -1,14 +1,16 @@
 package com.ars.service;
 
+import com.ars.dto.AcitivitySearchCriteria;
+import com.ars.dto.ActivityDto;
+import com.ars.dto.UserDto;
 import com.ars.po.Activity;
-import com.ars.po.User;
 import com.ars.repository.ActivityRepository;
+import com.ars.utils.WrappedBeanCopier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author Ocean Liang
@@ -24,20 +26,8 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
-    public List<Activity> getAllActivities() {
-        return activityRepository.findAll();
-    }
-
     public Activity getActivityById(String activityId) {
         return activityRepository.findById(activityId).orElse(null);
-    }
-
-    public Activity getActivityByTitle(String title) {
-        return activityRepository.findByTitle(title).orElse(null);
-    }
-
-    public Activity getActivityByAuthor(String author) {
-        return activityRepository.findByAuthor(author).orElse(null);
     }
 
     public boolean updateActivity(String activityId, Activity newActivity) {
@@ -62,11 +52,20 @@ public class ActivityService {
         return activity;
     }
 
-    public void participateActivity(String userName) {
-
-        Activity activity = activityRepository.findById("5c887c4f3b2dc429003a4e1c").orElse(null);
-        activity.getParticipants().add(new User("e","eee"));
-        activityRepository.save(activity);
-
+    public List<ActivityDto> getActivityByCriteria(AcitivitySearchCriteria searchCriteria) {
+        List<Activity> activities;
+        if (searchCriteria.getAuthor() != null) {
+            activities = activityRepository.findAllByAuthor(searchCriteria.getAuthor());
+        } else if (searchCriteria.getTitle() != null) {
+            activities = activityRepository.findAllByTitleLike(searchCriteria.getTitle());
+        } else {
+            activities = activityRepository.findAll();
+        }
+        List<ActivityDto> activityDtos = WrappedBeanCopier.copyPropertiesOfList(activities, ActivityDto.class);
+        activityDtos.forEach(activityDto -> {
+            List<UserDto> userDtos = WrappedBeanCopier.copyPropertiesOfList(activityDto.getParticipants(), UserDto.class);
+            activityDto.setParticipants(userDtos);
+        });
+        return activityDtos;
     }
 }

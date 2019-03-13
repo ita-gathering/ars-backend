@@ -1,16 +1,13 @@
 package com.ars.controller;
 
-import com.ars.dto.ActivityDto;
+import com.ars.dto.AcitivitySearchCriteria;
 import com.ars.dto.ResponseDto;
-import com.ars.dto.UserDto;
 import com.ars.po.Activity;
 import com.ars.service.ActivityService;
-import com.ars.utils.WrappedBeanCopier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -19,11 +16,12 @@ import java.util.Objects;
  */
 @Slf4j
 @RestController
+@RequestMapping("/activity")
 public class ActivityController {
     @Resource
     private ActivityService activityService;
 
-    @PostMapping("/activity")
+    @PostMapping
     public ResponseDto createActivity(@RequestBody Activity activity) {
         if (Objects.isNull(activity.getAuthor()) || Objects.isNull(activity.getTitle())
                 || Objects.isNull(activity.getContent())) {
@@ -33,18 +31,7 @@ public class ActivityController {
         return ResponseDto.success(activity);
     }
 
-    @GetMapping("/activity")
-    public ResponseDto getAllActivities() {
-        List<Activity> activities = activityService.getAllActivities();
-        List<ActivityDto> activityDtos = WrappedBeanCopier.copyPropertiesOfList(activities, ActivityDto.class);
-        activityDtos.forEach(activityDto -> {
-            List<UserDto> userDtos = WrappedBeanCopier.copyPropertiesOfList(activityDto.getParticipants(), UserDto.class);
-            activityDto.setParticipants(userDtos);
-        });
-        return ResponseDto.success(activityDtos);
-    }
-
-    @GetMapping("/activity/{activityId}")
+    @GetMapping("/{activityId}")
     public ResponseDto getActivityById(@PathVariable String activityId) {
         Activity activity = activityService.getActivityById(activityId);
         if (Objects.isNull(activity)) {
@@ -53,25 +40,17 @@ public class ActivityController {
         return ResponseDto.success(activity);
     }
 
-    @GetMapping("/activity/title={title}")
-    public ResponseDto getActivityByTitle(@PathVariable String title) {
-        Activity activity = activityService.getActivityByTitle(title);
-        if (Objects.isNull(activity)) {
-            return ResponseDto.fail("can not find activity");
-        }
-        return ResponseDto.success(activity);
+    @GetMapping
+    public ResponseDto getActivityByCriteria(
+            @RequestParam(name = "title", required = false) String title,
+            @RequestParam(name = "author", required = false) String author) {
+        AcitivitySearchCriteria searchCriteria = new AcitivitySearchCriteria();
+        searchCriteria.setTitle(title);
+        searchCriteria.setAuthor(author);
+        return ResponseDto.success(activityService.getActivityByCriteria(searchCriteria));
     }
 
-    @GetMapping("/activity/author={author}")
-    public ResponseDto getActivityByAuthor(@PathVariable String author) {
-        Activity activity = activityService.getActivityByAuthor(author);
-        if (Objects.isNull(activity)) {
-            return ResponseDto.fail("can not find activity");
-        }
-        return ResponseDto.success(activity);
-    }
-
-    @PutMapping("/activity/{activityId}")
+    @PutMapping("/{activityId}")
     public ResponseDto updateActivity(@PathVariable String activityId, @RequestBody Activity newActivity) {
         if (activityService.updateActivity(activityId, newActivity)) {
             return ResponseDto.success();
@@ -79,19 +58,13 @@ public class ActivityController {
         return ResponseDto.fail("update activity failed");
     }
 
-    @DeleteMapping("/activity/{activityId}")
+    @DeleteMapping("/{activityId}")
     public ResponseDto deleteActivity(@PathVariable String activityId) {
         Activity deletedActivity = activityService.deleteActivity(activityId);
         if (Objects.isNull(deletedActivity)) {
             return ResponseDto.fail("delete activity failed");
         }
         return ResponseDto.success(deletedActivity);
-    }
-
-    @PostMapping("/activity/{userName}")
-    public ResponseDto participateActivity(@PathVariable String userName) {
-        activityService.participateActivity(userName);
-        return ResponseDto.success();
     }
 
 }

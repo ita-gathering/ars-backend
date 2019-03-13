@@ -14,11 +14,12 @@ import java.util.stream.Collectors;
  */
 @Data
 public class ActivityDto {
-    public String author;
-    public String title;
-    public String content;
-    public List<UserDto> participants;
-    public LocalDateTime startDate;
-    public LocalDateTime closingDate;
+    private String id;
+    private String author;
+    private String title;
+    private String content;
+    private List<UserDto> participants;
+    private LocalDateTime startDate;
+    private LocalDateTime closingDate;
 
 }

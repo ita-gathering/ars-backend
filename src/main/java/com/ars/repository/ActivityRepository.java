@@ -4,7 +4,7 @@ import com.ars.po.Activity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author Ocean Liang
@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 @Repository
 public interface ActivityRepository extends MongoRepository<Activity, String> {
-    Optional<Activity> findByTitle(String title);
+    List<Activity> findAllByAuthor(String author);
 
-    Optional<Activity> findByAuthor(String author);
+    List<Activity> findAllByTitleLike(String title);
 }

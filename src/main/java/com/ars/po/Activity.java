@@ -15,13 +15,13 @@ import java.util.List;
 @Data
 public class Activity {
     @Id
-    public String id;
-    public String author;
-    public String title;
-    public String content;
-    public List<User> participants;
-    public LocalDateTime startDate;
-    public LocalDateTime closingDate;
+    private String id;
+    private String author;
+    private String title;
+    private String content;
+    private List<User> participants;
+    private LocalDateTime startDate;
+    private LocalDateTime closingDate;
 
     public Activity(String author, String title) {
         this.author = author;
