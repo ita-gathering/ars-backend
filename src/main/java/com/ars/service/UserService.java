@@ -1,9 +1,14 @@
 package com.ars.service;
 
+import com.ars.dto.ActivityDto;
+import com.ars.dto.UserDto;
+import com.ars.po.Activity;
 import com.ars.po.User;
+import com.ars.repository.ActivityRepository;
 import com.ars.repository.UserRepository;
-import org.springframework.data.domain.Example;
+import com.ars.utils.WrappedBeanCopier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -17,6 +22,8 @@ public class UserService {
 
     @Resource
     private UserRepository userRepository;
+    @Resource
+    private ActivityRepository activityRepository;
 
     public User getUserByUserName(String userName){
         return userRepository.findByUserName(userName);
@@ -33,5 +40,15 @@ public class UserService {
         }
         userRepository.delete(user);
         return user;
+    }
+
+    public List<ActivityDto> getActivitiesByUserName(String userName) {
+        List<Activity> activities = activityRepository.findAllByUserName(userName);
+        List<ActivityDto> activityDtos = WrappedBeanCopier.copyPropertiesOfList(activities, ActivityDto.class);
+        activityDtos.forEach(activityDto -> {
+            List<UserDto> userDtos = WrappedBeanCopier.copyPropertiesOfList(activityDto.getParticipants(), UserDto.class);
+            activityDto.setParticipants(userDtos);
+        });
+        return activityDtos;
     }
 }

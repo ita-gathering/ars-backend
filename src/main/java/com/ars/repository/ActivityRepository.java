@@ -2,6 +2,7 @@ package com.ars.repository;
 
 import com.ars.po.Activity;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,5 +17,8 @@ public interface ActivityRepository extends MongoRepository<Activity, String> {
 
     List<Activity> findAllByTitleLike(String title);
 
-    List<Activity> findAllByTitleLikeAndAuthor(String title,String author);
+    List<Activity> findAllByTitleLikeAndAuthor(String title, String author);
+
+    @Query(value = "{'participants.userName': ?0 }")
+    List<Activity> findAllByUserName(String userName);
 }

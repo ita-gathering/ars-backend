@@ -24,12 +24,12 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}")
-    public ResponseDto getUserById(@PathVariable String userName,@RequestBody JSONObject request) {
+    public ResponseDto getUserById(@PathVariable String userName, @RequestBody JSONObject request) {
         User user = userService.getUserByUserName(userName);
         if (Objects.isNull(user)) {
             return ResponseDto.fail("can not find user");
         }
-        if(user.getPassword().equals(request.get("description"))){
+        if (user.getPassword().equals(request.get("description"))) {
             return ResponseDto.success(user);
         }
         return ResponseDto.fail("can not login, password error");
@@ -42,6 +42,11 @@ public class UserController {
             return ResponseDto.fail("delete user failed");
         }
         return ResponseDto.success(deletedUser);
+    }
+
+    @GetMapping("/user/{userName}/activity")
+    public ResponseDto getUserById(@PathVariable String userName) {
+        return ResponseDto.success(userService.getActivitiesByUserName(userName));
     }
 
 }
