@@ -1,6 +1,8 @@
 package com.ars.controller;
 
+import com.ars.dto.ActivityDto;
 import com.ars.po.Activity;
+import com.ars.repository.ActivityRepository;
 import com.ars.service.ActivityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -13,10 +15,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.Arrays;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -38,6 +42,9 @@ public class ActivityControllerTest {
     @MockBean
     private ActivityService activityService;
 
+    @MockBean
+    private ActivityRepository activityRepository;
+
     @Test
     public void should_return_activity_when_create_activity() throws Exception {
         Activity activity = new Activity("Active_1","title","content");
@@ -51,6 +58,7 @@ public class ActivityControllerTest {
                 .andExpect(jsonPath("$.data.author",is("Active_1")))
                 .andExpect(jsonPath("$.data.title",is("title")))
                 .andExpect(jsonPath("$.data.content",is("content")));
+        verify(activityService, times(1)).createActivity(any());
 
     }
 
@@ -65,7 +73,7 @@ public class ActivityControllerTest {
 
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.message",is("author,title,content should not be empty")));
-
+        verify(activityService, never()).createActivity(any());
     }
 
     @Test
@@ -124,7 +132,10 @@ public class ActivityControllerTest {
 
         ResultActions resultActions = this.mockMvc.perform(delete("/activity/1"));
 
-        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.author",is("Active_1")))
+                .andExpect(jsonPath("$.data.title",is("title")))
+                .andExpect(jsonPath("$.data.content",is("content")));
     }
 
     @Test
@@ -137,6 +148,20 @@ public class ActivityControllerTest {
                 .andExpect(jsonPath("$.message",is("delete activity failed")));
     }
 
+    @Test
+    public void should_return_activity_List_when_given_activity_author_and_title_existed_in_DB() throws Exception {
+        ActivityDto activityDto = new ActivityDto();
+        activityDto.setAuthor("Active_1");
+        activityDto.setTitle("title");
+        activityDto.setContent("content");
+        given(activityService.getActivityByCriteria(any())).willReturn(Arrays.asList(activityDto));
 
+        ResultActions resultActions = this.mockMvc.perform(get("/activity?title=1&author=Active_1"));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].author",is("Active_1")))
+                .andExpect(jsonPath("$.data[0].title",is("title")))
+                .andExpect(jsonPath("$.data[0].content",is("content")));
+    }
 
 }
