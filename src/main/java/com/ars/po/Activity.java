@@ -23,8 +23,9 @@ public class Activity {
     private LocalDateTime startDate;
     private LocalDateTime closingDate;
 
-    public Activity(String author, String title) {
+    public Activity(String author, String title, String content) {
         this.author = author;
         this.title = title;
+        this.content = content;
     }
 }
