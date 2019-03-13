@@ -15,4 +15,6 @@ public interface ActivityRepository extends MongoRepository<Activity, String> {
     List<Activity> findAllByAuthor(String author);
 
     List<Activity> findAllByTitleLike(String title);
+
+    List<Activity> findAllByTitleLikeAndAuthor(String title,String author);
 }

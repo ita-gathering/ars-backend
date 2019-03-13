@@ -54,12 +54,18 @@ public class ActivityService {
 
     public List<ActivityDto> getActivityByCriteria(AcitivitySearchCriteria searchCriteria) {
         List<Activity> activities;
-        if (searchCriteria.getAuthor() != null) {
-            activities = activityRepository.findAllByAuthor(searchCriteria.getAuthor());
-        } else if (searchCriteria.getTitle() != null) {
-            activities = activityRepository.findAllByTitleLike(searchCriteria.getTitle());
-        } else {
-            activities = activityRepository.findAll();
+        if (searchCriteria.getAuthor()!=null){
+            if (searchCriteria.getTitle()==null){
+                activities = activityRepository.findAllByAuthor(searchCriteria.getAuthor());
+            }else {
+                activities = activityRepository.findAllByTitleLikeAndAuthor(searchCriteria.getTitle(),searchCriteria.getAuthor());
+            }
+        }else {
+            if (searchCriteria.getTitle()!=null){
+                activities = activityRepository.findAllByTitleLike(searchCriteria.getTitle());
+            }else {
+                activities = activityRepository.findAll();
+            }
         }
         List<ActivityDto> activityDtos = WrappedBeanCopier.copyPropertiesOfList(activities, ActivityDto.class);
         activityDtos.forEach(activityDto -> {
