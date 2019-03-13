@@ -5,6 +5,7 @@ import com.ars.repository.ActivityRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,17 +22,24 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
+    public List<Activity> getAllActivities() {
+        return activityRepository.findAll();
+    }
+
     public Activity getActivityById(String activityId) {
         return activityRepository.findById(activityId).orElse(null);
     }
 
-    public boolean updateActivity(String activityId, Object description) {
-        Activity activity = activityRepository.findById(activityId).orElse(null);
-        if (Objects.isNull(activity)) {
+    public boolean updateActivity(String activityId, Activity newActivity) {
+        Activity existedActivity = activityRepository.findById(activityId).orElse(null);
+        if (Objects.isNull(existedActivity)) {
             return false;
         }
-        activity.setDescription((String) description);
-        activityRepository.save(activity);
+        existedActivity.setTitle(newActivity.getTitle());
+        existedActivity.setContent(newActivity.getContent());
+        existedActivity.setStartDate(newActivity.getStartDate());
+        existedActivity.setClosingDate(newActivity.getClosingDate());
+        activityRepository.save(existedActivity);
         return true;
     }
 
