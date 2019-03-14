@@ -4,11 +4,14 @@ import com.ars.dto.AcitivitySearchCriteria;
 import com.ars.dto.ActivityDto;
 import com.ars.dto.UserDto;
 import com.ars.po.Activity;
+import com.ars.po.User;
 import com.ars.repository.ActivityRepository;
+import com.ars.repository.UserRepository;
 import com.ars.utils.WrappedBeanCopier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +24,8 @@ public class ActivityService {
 
     @Resource
     private ActivityRepository activityRepository;
+    @Resource
+    private UserRepository userRepository;
 
     public Activity createActivity(Activity activity) {
         return activityRepository.save(activity);
@@ -54,16 +59,16 @@ public class ActivityService {
 
     public List<ActivityDto> getActivityByCriteria(AcitivitySearchCriteria searchCriteria) {
         List<Activity> activities;
-        if (searchCriteria.getAuthor()!=null){
-            if (searchCriteria.getTitle()==null){
+        if (searchCriteria.getAuthor() != null) {
+            if (searchCriteria.getTitle() == null) {
                 activities = activityRepository.findAllByAuthor(searchCriteria.getAuthor());
-            }else {
-                activities = activityRepository.findAllByTitleLikeAndAuthor(searchCriteria.getTitle(),searchCriteria.getAuthor());
+            } else {
+                activities = activityRepository.findAllByTitleLikeAndAuthor(searchCriteria.getTitle(), searchCriteria.getAuthor());
             }
-        }else {
-            if (searchCriteria.getTitle()!=null){
+        } else {
+            if (searchCriteria.getTitle() != null) {
                 activities = activityRepository.findAllByTitleLike(searchCriteria.getTitle());
-            }else {
+            } else {
                 activities = activityRepository.findAll();
             }
         }
@@ -73,5 +78,30 @@ public class ActivityService {
             activityDto.setParticipants(userDtos);
         });
         return activityDtos;
+    }
+
+    public String participateActivity(String activityId, String username) {
+        User user = userRepository.findByUserName(username);
+        if (Objects.isNull(user)) {
+            return "can not find user";
+        }
+        Activity activity = activityRepository.findById(activityId).orElse(null);
+        if (Objects.isNull(activity)) {
+            return "can not find activity";
+        }
+        if (activity.getParticipants() != null) {
+            boolean hasParticipate = activity.getParticipants().stream()
+                    .anyMatch(participant -> participant.getUserName().equals(user.getUserName()));
+            if (hasParticipate) {
+                return "has already participate";
+            }
+            activity.getParticipants().add(user);
+        } else {
+            List<User> users = new ArrayList<>();
+            users.add(user);
+            activity.setParticipants(users);
+        }
+        activityRepository.save(activity);
+        return "";
     }
 }
