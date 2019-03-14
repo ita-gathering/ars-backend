@@ -1,10 +1,12 @@
 package com.ars.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ars.dto.AcitivitySearchCriteria;
 import com.ars.dto.ResponseDto;
 import com.ars.po.Activity;
 import com.ars.service.ActivityService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -65,6 +67,19 @@ public class ActivityController {
             return ResponseDto.fail("delete activity failed");
         }
         return ResponseDto.success(deletedActivity);
+    }
+
+    @PatchMapping("/{activityId}")
+    public ResponseDto participateActivity(@PathVariable String activityId, @RequestBody JSONObject jsonObject) {
+        String username = (String) jsonObject.get("userName");
+        if (Objects.isNull(username)) {
+            return ResponseDto.fail("userName should not be empty");
+        }
+        String result = activityService.participateActivity(activityId, username);
+        if (StringUtils.isEmpty(result)) {
+            return ResponseDto.success();
+        }
+        return ResponseDto.fail(result);
     }
 
 }
