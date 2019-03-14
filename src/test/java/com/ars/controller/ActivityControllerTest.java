@@ -2,7 +2,7 @@ package com.ars.controller;
 
 import com.ars.dto.ActivityDto;
 import com.ars.po.Activity;
-import com.ars.repository.ActivityRepository;
+import com.ars.po.User;
 import com.ars.service.ActivityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -41,9 +41,6 @@ public class ActivityControllerTest {
 
     @MockBean
     private ActivityService activityService;
-
-    @MockBean
-    private ActivityRepository activityRepository;
 
     @Test
     public void should_return_activity_when_create_activity() throws Exception {
@@ -162,6 +159,46 @@ public class ActivityControllerTest {
                 .andExpect(jsonPath("$.data[0].author",is("Active_1")))
                 .andExpect(jsonPath("$.data[0].title",is("title")))
                 .andExpect(jsonPath("$.data[0].content",is("content")));
+    }
+
+    @Test
+    public void should_return_userName_should_not_be_empty_when_given_userName_is_empty() throws Exception {
+        User user = new User(null,null);
+
+        ResultActions resultActions = this.mockMvc.perform(patch("/activity/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(user)));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.message",is("userName should not be empty")));
+
+    }
+
+    @Test
+    public void should_return_participateActivity_result_when_given_userName_and_participate_fail() throws Exception {
+        User user = new User("ocean",null);
+        when(activityService.participateActivity(anyString(),anyString())).thenReturn("participateActivity result with fail root cause");
+
+        ResultActions resultActions = this.mockMvc.perform(patch("/activity/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(user)));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.message",is("participateActivity result with fail root cause")));
+
+    }
+
+    @Test
+    public void should_return_null_when_participateActivity_success() throws Exception {
+        User user = new User("ocean",null);
+        given(activityService.participateActivity(anyString(),anyString())).willReturn(null);
+
+        ResultActions resultActions = this.mockMvc.perform(patch("/activity/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(user)));
+
+        resultActions.andExpect(status().isOk());
+
     }
 
 }
