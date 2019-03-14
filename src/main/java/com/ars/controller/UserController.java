@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}")
-    public ResponseDto getUserById(@PathVariable String userName, @RequestBody JSONObject request) {
+    public ResponseDto getUserByUserName(@PathVariable String userName, @RequestBody JSONObject request) {
         User user = userService.getUserByUserName(userName);
         if (Objects.isNull(user)) {
             return ResponseDto.fail("can not find user");
@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{userName}/activity")
-    public ResponseDto getUserById(@PathVariable String userName) {
+    public ResponseDto getUserParticipatedActivitiesByUserName(@PathVariable String userName) {
         return ResponseDto.success(userService.getActivitiesByUserName(userName));
     }
 
